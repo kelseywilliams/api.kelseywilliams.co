@@ -9,7 +9,7 @@ services:
         ports:
             - "3028:3028"
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost"]
+            test: ["CMD", "curl", "-f", "http://localhost:3028"]
             interval: 10s
             timeout: 3s
             start_period: 30s
@@ -18,4 +18,4 @@ services:
 networks:
     site:
         external: true
-        
+
