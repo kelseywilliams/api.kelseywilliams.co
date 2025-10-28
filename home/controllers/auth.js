@@ -3,7 +3,7 @@ import { getPool } from "../utils/postgres.js";
 import { getRedisClient } from "../utils/redis.js";
 import logger from "../utils/logger.js";
 import jwt from "jsonwebtoken";
-import { SECRET_ACCESS_TOKEN, USER, TOKEN_EXPIRY_MINS } from "../config/index.js";
+import { TOKEN, USER, TOKEN_EXPIRY_MINS } from "../config/index.js";
 
 export async function Register(req, res) {
     try {
@@ -75,7 +75,7 @@ export async function Login(req, res) {
                 })
             } else {
                 const payload = { id: user.id }
-                const token = jwt.sign(payload, SECRET_ACCESS_TOKEN, {
+                const token = jwt.sign(payload, TOKEN, {
                     expiresIn: `${TOKEN_EXPIRY_MINS}m`,
                 });
 
@@ -220,6 +220,21 @@ export async function Delete(req, res){
         return res.status(500).json({
             status: false,
             message: "Internal server error."
+        })
+    }
+}
+
+export async function SendCodeCtlr(req, res){
+    try {
+        return res.status(200).json({
+            status: true,
+            message: "Verification code sent."
+        })
+    } catch (err) {
+        logger.error(err);
+        return res.status(500).json({
+            status: false,
+            message: err
         })
     }
 }
