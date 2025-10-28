@@ -1,6 +1,7 @@
 import Mailjet from 'node-mailjet';
 import crypto from 'crypto';
 import { getRedisClient } from '../utils/redis.js';
+import { getPool } from '../utils/postgres.js';
 import { MAILJET_API_KEY, MAILJET_SECRET } from '../config/index.js';
 import logger from '../utils/logger.js';
 
@@ -16,6 +17,17 @@ export default async function SendCode(req, res, next) {
 
         const code = crypto.randomInt(1000, 9999).toString();
         const client = await getRedisClient();
+        const pool = getPool();
+        const exsists = await pool.query(
+            'select * from users where email = $1',
+            [email]
+        )
+        if(exists.rows.lenth > 0){
+            return res.status(409).json({
+                status: false,
+                message: "An account with that email already exists."
+            });
+        }
         await client.setEx(`verify:${email}`, 300, code);
 
         await mailjet.post('send', { version: 'v3.1' }).request({

@@ -1,5 +1,5 @@
 import { getRedisClient } from '../utils/redis.js';
-
+import logger from '../utils/logger.js';
 export default async function CheckCode(req, res, next){
     try {
         const  { email, code } = req.body;
