@@ -18,7 +18,7 @@ export default async function SendCode(req, res, next) {
         const code = crypto.randomInt(1000, 9999).toString();
         const client = await getRedisClient();
         const pool = getPool();
-        const exsists = await pool.query(
+        const exists = await pool.query(
             'select * from users where email = $1',
             [email]
         )

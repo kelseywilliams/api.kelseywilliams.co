@@ -20,7 +20,7 @@ create table if not exists users (
 ```
 #### Redis
 
-If using ACLs, create a user with `del`, `setex`, and `exists` permissions
+If using ACLs, create a user with `del`, `setex`, `exists` and `get` permissions
 
 ### Secrets
 create a secrets folder with the following structure
