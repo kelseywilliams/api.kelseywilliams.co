@@ -10,7 +10,7 @@ const TOKEN = fs.readFileSync('/run/secrets/jwt_secret', 'utf-8').trim();
 const MAILJET_API_KEY = fs.readFileSync('/run/secrets/mailjet_api_key', 'utf-8').trim();
 const MAILJET_SECRET = fs.readFileSync('/run/secrets/mailjet_secret', 'utf-8').trim();
 
-const REDIS_URI = `redis://debug:${redis_pwd}@redis:6379`;
+const REDIS_URI = `redis://api:${redis_pwd}@redis:6379`;
 const POSTGRES_WORKER_URI = `postgresql://worker:${postgres_worker_pwd}@postgres:5432/apidb`;
 const { 
     PORT, 
