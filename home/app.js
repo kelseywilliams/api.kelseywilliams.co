@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectRedis } from "./utils/redis.js";
 import { connectPool } from "./utils/postgres.js";
-import { REDIS_URI, POSTGRES_URI, PORT } from "./config/index.js";
+import { PORT } from "./config/index.js";
 import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
 const server = express();

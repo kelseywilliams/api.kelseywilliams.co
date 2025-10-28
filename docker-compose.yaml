@@ -2,6 +2,13 @@ services:
     api:
         build: .
         container_name: api
+        secrets:
+            - mailjet_api_key
+            - mailjet_secret
+            - jwt_secret
+            - postgres_worker_secret
+            - postgres_readonly_secret
+            - redis_secret
         networks:
             - site
         volumes:
@@ -14,6 +21,20 @@ services:
             timeout: 3s
             start_period: 30s
             retries: 3
+
+secrets:
+    mailjet_api_key:
+        file:  ./secrets/mailjet_api_key.txt
+    mailjet_secret:
+        file: ./secrets/mailjet_secret.txt
+    jwt_secret:
+        file: ./secrets/jwt_secret.txt
+    postgres_worker_secret:
+        file: ./secrets/postgres_worker_secret.txt
+    postgres_readonly_secret:
+        file: ./secrets/postgres_readonly_secret.txt
+    redis_secret:
+        file: ./secrets/redis_secret.txt
 
 networks:
     site:

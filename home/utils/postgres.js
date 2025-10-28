@@ -1,5 +1,6 @@
 import pg from "pg";
 import logger from "../utils/logger.js";
+import { POSTGRES_WORKER_URI } from "../config/index.js";
 
 const { Pool } = pg;
 
@@ -9,7 +10,7 @@ export const connectPool = async () => {
     if (pool) return pool;
     try {
         pool = new Pool({
-            connectionString: process.env.POSTGRES_URI,
+            connectionString: POSTGRES_WORKER_URI,
             max: 20, // Maximum number of clients in pool
             idelTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000,

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { SECRET_ACCESS_TOKEN } from "../config/index.js";
+import { TOKEN } from "../config/index.js";
 import { getPool } from "../utils/postgres.js";
 import { getRedisClient } from "../utils/redis.js";
 import logger from"../utils/logger.js"
@@ -27,7 +27,7 @@ export default async function Verify(req, res, next) {
 
         let decoded;
         try {
-            decoded = jwt.verify(token, SECRET_ACCESS_TOKEN);
+            decoded = jwt.verify(token, TOKEN);
         } catch(err) {
             return res.status(401).json({
                 status: false,
@@ -59,6 +59,7 @@ export default async function Verify(req, res, next) {
         }
         next();
     } catch (err) {
+        logger.error("Failed to verify user:", err);
         return res.status(500).json({
             status: false,
             message: "Internal Server Error",

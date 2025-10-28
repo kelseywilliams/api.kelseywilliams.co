@@ -1,3 +1,4 @@
+import logger from "../utils/logger.js";
 import { ADMIN, USER } from "../config/index.js";
 export default function VerifyRole(req, res, next){
     try{
@@ -10,9 +11,10 @@ export default function VerifyRole(req, res, next){
         }
         next();
     } catch (err) {
+        logger.error("Failed to verify role:", err);
         return res.status(500).json({
             status: false,
-            message: "Internal server error."
+            message: "Internal Server Error"
         });
     }
 }
