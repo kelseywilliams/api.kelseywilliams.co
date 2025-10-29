@@ -193,10 +193,7 @@ export async function Delete(req, res){
         // TODO: What the hell is this.  Fix it.
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
-            return res.status(500).json({
-                status: true,
-                message: "Failed to deleted account. Invalid or expired session."
-            })
+            throw new Error("Failed to deleted account. Invalid or expired session.");
         }
         const result = await client.setEx(token, jwtExpInSeconds, 'blacklisted');
 
