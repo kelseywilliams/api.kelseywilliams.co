@@ -41,3 +41,165 @@ Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.
 `openssl rand -hex 32 > secrets/jwt_secret.txt`
 ## Run
 Run with `docker-compose up`
+
+## Usage
+### Endpoints
+#### /auth/
+Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.
+- **send-code**
+
+    Description: Sends email verification code
+
+    Method: post
+    
+    req:
+
+    Body
+    ```
+    {
+        "email":email
+    }
+    ```
+    res:
+
+        Status codes:
+            200 Verification code sent.
+    
+- **register**
+
+    Description: A call to this endpoint should always come after a call to send-code
+    
+    Method: post
+
+    req:
+
+    Body
+    ```
+    {
+        "email":email,
+        "code":code,
+        "username":username,
+        "password":password
+    }
+    ```
+
+    res:
+
+        Status codes:
+            400 Missing email or code
+            401 Invalid or expired verification code
+            409 User with this username or password already exists.
+            201 Account created successfully.
+
+- **login**
+
+    Method: post
+
+    res:
+
+    Body
+
+    ```
+    {
+        "email":email
+        "username":username
+        "password":password
+    }
+    ```
+    email or username only is accepted.
+
+    res:
+
+        Status codes:
+            401 Invalid username or password.
+            200 Successfully logged in.
+        
+    a cookie will be sent in the header under "SessionID".
+
+- **user**
+
+    Description: Use this endpoint to verify that a given user is still logged in and to retrieve their id,email, username, and role
+
+    Method: post
+
+    req:
+    
+    Include session cookie in header
+
+    res:
+        
+        Status codes:
+            401 This session is invalid or expired.  Please login.
+            200 User verified
+
+    Body
+    ```
+    {
+        "id":id,
+        "email":email,
+        "username":username,
+        "role":role
+    }
+
+    ```
+
+- admin
+
+    Description: Use this endpoint to verify that the user has adminstrator privileges
+
+    Method: post
+
+    res:
+    Include session cookie in header
+
+    res:
+
+        Status codes:
+            401 This session is invalid or expired.  Please login.
+            403 Insufficient privileges.
+            200 Admin role verified.
+        
+    Body
+
+    ```
+        {
+        "id":id,
+        "email":email,
+        "username":username,
+        "role":role
+    }
+
+    ```
+
+- **logout**
+    
+    Description: logs out user out
+
+    Method: post
+
+    req:
+        
+    Include session cookie in header.
+    
+    res:
+    
+        Status codes:
+            401 This session is invalid or expired.  Please login.
+            204 Already loggged out.
+            200 Successfully logged out.
+    
+- **delete**
+    
+    Description: deletes account.  Action can only be performed while the user is logged into their account.
+
+    Method: post
+
+    req:
+        Include session cookie in header
+
+    res:
+    
+        Status codes: 
+            401 This session is invalid or expired.  Please login.
+            200 Account deleted successfully.
+
