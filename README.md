@@ -42,10 +42,14 @@ Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.
 ## Run
 Run with `docker-compose up`
 
-## Usage
-### Endpoints
+## API Documentation
+Make a call to the api by calling `https://api.kelseywilliams.co` + `/route/` + `endpoint` with the appropriate headers and request body.  Below are outlined the current available routes and their different endpoints and request and response structure.
+
+For example `https://api.kelseywilliams.co/auth/login`
+
+Current available routes: `auth`
 ### /auth/
-Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.
+Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.  Request method for all endpoints is `post`
 #### **send-code**
 
 Description: Sends email verification code
