@@ -45,7 +45,7 @@ export async function Register(req, res) {
         logger.error("Account creation failed:", err);
         return res.status(500).json({
             status: false,
-            message: "Account creation failed."
+            message: "Internal Server Error"
         });
     }
 }
@@ -150,7 +150,7 @@ export async function Logout(req, res){
         const jwtExpInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
-            return res.status(200).json({
+            return res.status(204).json({
                 status: true,
                 message: "Already loggged out."
             })
@@ -172,7 +172,7 @@ export async function Logout(req, res){
         logger.error(err);
         return res.status(500).json({
             status: false,
-            message: "Internal server error."
+            message: "Internal Server Error."
         })
     }
 }
@@ -190,6 +190,7 @@ export async function Delete(req, res){
         const token = cookie.split(';')[0];
         const decoded = jwt.decode(token);
         const jwtExpInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
+        // TODO: What the hell is this.  Fix it.
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
             return res.status(500).json({
@@ -212,7 +213,7 @@ export async function Delete(req, res){
                 })
             }
         } else {
-            throw new Error("Failed to deleted account.");
+            throw new Error("Failed to delete account.");
         }
 
     } catch (err) {

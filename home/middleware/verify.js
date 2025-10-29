@@ -45,7 +45,7 @@ export default async function Verify(req, res, next) {
         if (exists.rows.length === 0){
             return res.status(401).json({
                 status: false,
-                message: "Invalid session user."
+                message: "This session is invalid or expired.  Please login."
             })
         }
 
