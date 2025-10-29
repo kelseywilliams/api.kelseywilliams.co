@@ -44,162 +44,136 @@ Run with `docker-compose up`
 
 ## Usage
 ### Endpoints
-#### /auth/
+### /auth/
 Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.
-- **send-code**
+#### **send-code**
 
-    Description: Sends email verification code
+Description: Sends email verification code
 
-    Method: post
+request body:
+```
+{
+    "email":email
+}
+```
+response codes:
     
-    req:
-
-    Body
-    ```
-    {
-        "email":email
-    }
-    ```
-    res:
-
-        Status codes:
-            200 Verification code sent.
+    200 Verification code sent.
     
-- **register**
+#### **register**
 
-    Description: A call to this endpoint should always come after a call to send-code
+Description: A call to this endpoint should always come after a call to send-code
+
+request body:
+```
+{
+"email":email,
+"code":code,
+"username":username,
+"password":password
+}
+```
+
+response codes:
     
-    Method: post
+    400 Missing email or code
+    
+    401 Invalid or expired verification code
+    
+    409 User with this username or password already exists.
+    
+    201 Account created successfully.
 
-    req:
+#### **login**
+response body:
+```
+{
+    "email":email
+    "username":username
+    "password":password
+}
+```
+email || username is accepted.
 
-    Body
-    ```
-    {
-        "email":email,
-        "code":code,
-        "username":username,
-        "password":password
-    }
-    ```
+response codes:
+    
+    401 Invalid username or password.
+    
+    200 Successfully logged in.
+    
+a cookie will be sent in the header under "SessionID".
 
-    res:
+#### **user**
 
-        Status codes:
-            400 Missing email or code
-            401 Invalid or expired verification code
-            409 User with this username or password already exists.
-            201 Account created successfully.
+Description: Use this endpoint to verify that a given user is still logged in and to retrieve their id,email, username, and role
 
-- **login**
+Include session cookie in header
 
-    Method: post
+response codes:
+    
+    401 This session is invalid or expired.  Please login.
+    
+    200 User verified
 
-    res:
+response body:
+```
+{
+    "id":id,
+    "email":email,
+    "username":username,
+    "role":role
+}
 
-    Body
+```
 
-    ```
-    {
-        "email":email
-        "username":username
-        "password":password
-    }
-    ```
-    email or username only is accepted.
+#### **admin**
 
-    res:
+Description: Use this endpoint to verify that the user has adminstrator privileges
 
-        Status codes:
-            401 Invalid username or password.
-            200 Successfully logged in.
+Include session cookie in header
+
+response codes:
         
-    a cookie will be sent in the header under "SessionID".
-
-- **user**
-
-    Description: Use this endpoint to verify that a given user is still logged in and to retrieve their id,email, username, and role
-
-    Method: post
-
-    req:
-    
-    Include session cookie in header
-
-    res:
+        401 This session is invalid or expired.  Please login.
         
-        Status codes:
-            401 This session is invalid or expired.  Please login.
-            200 User verified
+        403 Insufficient privileges.
+        
+        200 Admin role verified.
+    
 
-    Body
-    ```
+response body:
+
+```
     {
-        "id":id,
-        "email":email,
-        "username":username,
-        "role":role
-    }
+    "id":id,
+    "email":email,
+    "username":username,
+    "role":role
+}
 
-    ```
+```
 
-- admin
+#### **logout**
 
-    Description: Use this endpoint to verify that the user has adminstrator privileges
+Include session cookie in header.
 
-    Method: post
-
-    res:
-    Include session cookie in header
-
-    res:
-
-        Status codes:
-            401 This session is invalid or expired.  Please login.
-            403 Insufficient privileges.
-            200 Admin role verified.
+response codes:
         
-    Body
-
-    ```
-        {
-        "id":id,
-        "email":email,
-        "username":username,
-        "role":role
-    }
-
-    ```
-
-- **logout**
-    
-    Description: logs out user out
-
-    Method: post
-
-    req:
+        401 This session is invalid or expired.  Please login.
         
-    Include session cookie in header.
-    
-    res:
-    
-        Status codes:
-            401 This session is invalid or expired.  Please login.
-            204 Already loggged out.
-            200 Successfully logged out.
-    
-- **delete**
-    
-    Description: deletes account.  Action can only be performed while the user is logged into their account.
+        204 Already loggged out.
+        
+        200 Successfully logged out.
 
-    Method: post
-
-    req:
-        Include session cookie in header
-
-    res:
+#### **delete**
     
-        Status codes: 
-            401 This session is invalid or expired.  Please login.
-            200 Account deleted successfully.
+Description: deletes account.  Action can only be performed while the user is logged into their account.
+
+Include session cookie in header
+
+response codes:
+        
+        401 This session is invalid or expired.  Please login.
+        
+        200 Account deleted successfully.
 

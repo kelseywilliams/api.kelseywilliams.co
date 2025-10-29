@@ -22,7 +22,7 @@ export default async function SendCode(req, res, next) {
             'select * from users where email = $1',
             [email]
         )
-        if(exists.rows.lenth > 0){
+        if(exists.rows.length > 0){
             return res.status(409).json({
                 status: false,
                 message: "An account with that email already exists."
