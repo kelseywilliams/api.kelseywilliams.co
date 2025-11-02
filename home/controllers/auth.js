@@ -18,7 +18,7 @@ export async function Register(req, res) {
 
         if(exists.rows.length > 0) {
             return res.status(409).json({
-                    message: "User with this username or password already exists."
+                message: "User with this username or password already exists."
             })
         } 
 
@@ -156,7 +156,7 @@ export async function Logout(req, res){
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
             return res.status(204).json({
-                    message: "Already loggged out."
+                message: "Already loggged out."
             })
         }
         const result = await client.setEx(token, jwtExpInSeconds, 'blacklisted');
@@ -165,7 +165,7 @@ export async function Logout(req, res){
             res.setHeader('Clear-Site-Data', '"cookies"');
             logger.info(`${req.user.username} successfully logged out.`)
             return res.status(200).json({ 
-                    message: 'Successfully logged out.' 
+                message: 'Successfully logged out.' 
             });
         } else {
             throw new Error("Encountered error while logging out.");
@@ -174,7 +174,6 @@ export async function Logout(req, res){
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            
             message: "Internal Server Error."
         })
     }
@@ -218,7 +217,6 @@ export async function Delete(req, res){
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            
             message: "Internal server error."
         })
     }
@@ -227,13 +225,11 @@ export async function Delete(req, res){
 export async function SendCodeCtlr(req, res){
     try {
         return res.status(200).json({
-            
             message: "Verification code sent."
         })
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            
             message: err
         })
     }
