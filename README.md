@@ -45,7 +45,7 @@ Run with `docker-compose up`
 ## API Documentation
 Make a call to the api by calling `https://api.kelseywilliams.co` + `/route/` + `endpoint` with the appropriate headers and request body.  Below are outlined the current available routes and their different endpoints and request and response structure.
 
-For example `https://api.kelseywilliams.co/auth/login`
+example api call `POST https://api.kelseywilliams.co/auth/login`
 
 Current available routes: `auth`
 ### /auth/
@@ -66,7 +66,7 @@ response codes:
     
 #### **register**
 
-Description: A call to this endpoint should always come after a call to send-code
+Description: A call to this endpoint should always come after a call to send-code.  The user will be logged in after registering.
 
 request body:
 ```
@@ -87,6 +87,8 @@ response codes:
     409 User with this username or password already exists.
     
     201 Account created successfully.
+
+a cookie will be sent in the header under "SessionID"
 
 #### **login**
 response body:
