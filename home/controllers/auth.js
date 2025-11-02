@@ -18,8 +18,7 @@ export async function Register(req, res) {
 
         if(exists.rows.length > 0) {
             return res.status(409).json({
-                
-                message: "User with this username or password already exists."
+                    message: "User with this username or password already exists."
             })
         } 
 
@@ -51,8 +50,7 @@ export async function Register(req, res) {
 
             logger.info(`Created user ${username}`);
 
-            return res.status(201).json({
-                
+            return res.status(201).json({    
                 message: "Account created successfully."
             });
         } else {
@@ -60,8 +58,7 @@ export async function Register(req, res) {
         }
     } catch (err) {
         logger.error("Account creation failed:", err);
-        return res.status(500).json({
-            
+        return res.status(500).json({ 
             message: "Internal Server Error"
         });
     }
@@ -77,8 +74,7 @@ export async function Login(req, res) {
         );
         
         if(exists.rows.length == 0){
-            return res.status(401).json({
-                
+            return res.status(401).json({  
                 message: "Invalid username or password."
             });
         } else {
@@ -86,8 +82,7 @@ export async function Login(req, res) {
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
 
             if (!isPasswordValid){
-                return res.status(401).json({
-                    
+                return res.status(401).json({   
                     message: "Invalid username or password."
                 })
             } else {
@@ -104,16 +99,14 @@ export async function Login(req, res) {
                 };
                 res.cookie("SessionID", token, options); 
                 logger.info(`${username} at ${email} logged in.`)
-                return res.status(200).json({
-                    
+                return res.status(200).json({      
                     message: "Successfully logged in."
                 })
             }
         }
     } catch(err){
         logger.error(err);
-        return res.status(500).json({
-            
+        return res.status(500).json({ 
             message: "Internal server error"
         })
     }
@@ -121,16 +114,13 @@ export async function Login(req, res) {
 
 export async function VerifyUser(req, res) {
     try {
-        return res.status(200).json({
-            
+        return res.status(200).json({    
             data: req.user,
             message: "User verfied."
         })
     } catch (err) {
         logger.error(err);
-        return res.status(500).json({
-            
-            data: req.user,
+        return res.status(500).json({      
             message: err
         })
     }
@@ -138,15 +128,13 @@ export async function VerifyUser(req, res) {
 
 export async function VerifyAdmin(req, res) {
     try {
-        return res.status(200).json({
-            
+        return res.status(200).json({        
             data: req.user,
             message: "Admin role verified."
         })
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            
             data: req.user,
             message: err
         })
@@ -168,8 +156,7 @@ export async function Logout(req, res){
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
             return res.status(204).json({
-                
-                message: "Already loggged out."
+                    message: "Already loggged out."
             })
         }
         const result = await client.setEx(token, jwtExpInSeconds, 'blacklisted');
@@ -178,8 +165,7 @@ export async function Logout(req, res){
             res.setHeader('Clear-Site-Data', '"cookies"');
             logger.info(`${req.user.username} successfully logged out.`)
             return res.status(200).json({ 
-                
-                message: 'Successfully logged out.' 
+                    message: 'Successfully logged out.' 
             });
         } else {
             throw new Error("Encountered error while logging out.");
@@ -221,8 +207,7 @@ export async function Delete(req, res){
                 [req.user.id]
             );
             if (result.rows.length > 0) {
-                return res.status(200).json({
-                    
+                return res.status(200).json({   
                     message: "Account deleted successfully."
                 })
             }
