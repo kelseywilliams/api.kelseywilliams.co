@@ -5,7 +5,6 @@ export default function VerifyRole(req, res, next){
         const user = req.user
         if (user.role != ADMIN) {
             return res.status(403).json({
-                status: false, 
                 message: "Insufficient privileges."
             });
         }
@@ -13,7 +12,6 @@ export default function VerifyRole(req, res, next){
     } catch (err) {
         logger.error("Failed to verify role:", err);
         return res.status(500).json({
-            status: false,
             message: "Internal Server Error"
         });
     }
