@@ -18,7 +18,6 @@ export async function Register(req, res) {
 
         if(exists.rows.length > 0) {
             return res.status(409).json({
-                status: false,
                 message: "User with this username or password already exists."
             })
         } 
@@ -33,9 +32,25 @@ export async function Register(req, res) {
         )
 
         if (result.rows && result.rows.length > 0) {
-            logger.info(`Created user ${username}`)
-            return res.status(201).json({
-                status: true,
+            const newUser = result.rows[0];
+
+            const payload = { id: newUser.id };
+            const token = jwt.sign(payload, TOKEN, {
+                expiresIn: `${TOKEN_EXPIRY_MINS}m`,
+            });
+            
+            let options = {
+                maxAge: 20 * 60 * 1000,
+                httpOnly: true,
+                secure: true,
+                sameSite: "None"
+            }
+
+            res.cookie("SessionID", token, options);
+
+            logger.info(`Created user ${username}`);
+
+            return res.status(201).json({    
                 message: "Account created successfully."
             });
         } else {
@@ -43,8 +58,7 @@ export async function Register(req, res) {
         }
     } catch (err) {
         logger.error("Account creation failed:", err);
-        return res.status(500).json({
-            status: false,
+        return res.status(500).json({ 
             message: "Internal Server Error"
         });
     }
@@ -60,8 +74,7 @@ export async function Login(req, res) {
         );
         
         if(exists.rows.length == 0){
-            return res.status(401).json({
-                status: false,
+            return res.status(401).json({  
                 message: "Invalid username or password."
             });
         } else {
@@ -69,8 +82,7 @@ export async function Login(req, res) {
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
 
             if (!isPasswordValid){
-                return res.status(401).json({
-                    status: false,
+                return res.status(401).json({   
                     message: "Invalid username or password."
                 })
             } else {
@@ -87,16 +99,14 @@ export async function Login(req, res) {
                 };
                 res.cookie("SessionID", token, options); 
                 logger.info(`${username} at ${email} logged in.`)
-                return res.status(200).json({
-                    status: true,
+                return res.status(200).json({      
                     message: "Successfully logged in."
                 })
             }
         }
     } catch(err){
         logger.error(err);
-        return res.status(500).json({
-            status: false,
+        return res.status(500).json({ 
             message: "Internal server error"
         })
     }
@@ -104,16 +114,13 @@ export async function Login(req, res) {
 
 export async function VerifyUser(req, res) {
     try {
-        return res.status(200).json({
-            status: true,
+        return res.status(200).json({    
             data: req.user,
             message: "User verfied."
         })
     } catch (err) {
         logger.error(err);
-        return res.status(500).json({
-            status: false,
-            data: req.user,
+        return res.status(500).json({      
             message: err
         })
     }
@@ -121,15 +128,13 @@ export async function VerifyUser(req, res) {
 
 export async function VerifyAdmin(req, res) {
     try {
-        return res.status(200).json({
-            status: true,
+        return res.status(200).json({        
             data: req.user,
             message: "Admin role verified."
         })
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            status: false,
             data: req.user,
             message: err
         })
@@ -151,7 +156,6 @@ export async function Logout(req, res){
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
             return res.status(204).json({
-                status: true,
                 message: "Already loggged out."
             })
         }
@@ -161,7 +165,6 @@ export async function Logout(req, res){
             res.setHeader('Clear-Site-Data', '"cookies"');
             logger.info(`${req.user.username} successfully logged out.`)
             return res.status(200).json({ 
-                status: true,
                 message: 'Successfully logged out.' 
             });
         } else {
@@ -171,7 +174,6 @@ export async function Logout(req, res){
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            status: false,
             message: "Internal Server Error."
         })
     }
@@ -204,8 +206,7 @@ export async function Delete(req, res){
                 [req.user.id]
             );
             if (result.rows.length > 0) {
-                return res.status(200).json({
-                    status: true,
+                return res.status(200).json({   
                     message: "Account deleted successfully."
                 })
             }
@@ -216,7 +217,6 @@ export async function Delete(req, res){
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            status: false,
             message: "Internal server error."
         })
     }
@@ -225,13 +225,11 @@ export async function Delete(req, res){
 export async function SendCodeCtlr(req, res){
     try {
         return res.status(200).json({
-            status: true,
             message: "Verification code sent."
         })
     } catch (err) {
         logger.error(err);
         return res.status(500).json({
-            status: false,
             message: err
         })
     }

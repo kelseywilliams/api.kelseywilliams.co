@@ -13,14 +13,12 @@ export default async function Verify(req, res, next) {
         
         if (!token) {
             return res.status(401).json({
-                status: false,
                 message: "This session is invalid or has expired. Please login."
             })
         }
         const isBlacklisted = await client.exists(token);
         if (isBlacklisted){
             return res.status(401).json({
-                status: false,
                 message: "This session is invalid or has expired. Please login."
             })
         }
@@ -30,7 +28,6 @@ export default async function Verify(req, res, next) {
             decoded = jwt.verify(token, TOKEN);
         } catch(err) {
             return res.status(401).json({
-                status: false,
                 message: "This session is invalid or expired.  Please login."
             })
         }
@@ -44,7 +41,6 @@ export default async function Verify(req, res, next) {
 
         if (exists.rows.length === 0){
             return res.status(401).json({
-                status: false,
                 message: "This session is invalid or expired.  Please login."
             })
         }
@@ -61,7 +57,6 @@ export default async function Verify(req, res, next) {
     } catch (err) {
         logger.error("Failed to verify user:", err);
         return res.status(500).json({
-            status: false,
             message: "Internal Server Error",
         });
     }

@@ -11,7 +11,7 @@ export default async function SendCode(req, res, next) {
     try {
         const  { email } = req.body;
         if(!email) return res.status(400).json({
-            status: false,
+            
             message: "Email is required."
         });
 
@@ -24,7 +24,7 @@ export default async function SendCode(req, res, next) {
         )
         if(exists.rows.length > 0){
             return res.status(409).json({
-                status: false,
+                
                 message: "An account with that email already exists."
             });
         }
@@ -44,7 +44,7 @@ export default async function SendCode(req, res, next) {
     } catch (err) {
         logger.error("Failed to send code:", err);
         return res.status(500).json({
-            status: false,
+            
             message: 'Internal Server Error'
         });
     }
