@@ -23,7 +23,7 @@ const corsOptions = {
     },
     credentials: true,
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authrization"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }
 // CONFIGURE HEADER INFORMATION 
 // Allow request from any source. In real production, this should be limited to allowed origins only
