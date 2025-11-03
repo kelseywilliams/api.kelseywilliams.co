@@ -9,7 +9,7 @@ import logger from "./utils/logger.js";
 const server = express();
 
 const allowedOrigins = [
-    "https://kelseywiliams.co",
+    "https://kelseywilliams.co",
     "https://www.kelseywilliams.co"
 ]
 
