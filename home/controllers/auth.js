@@ -68,9 +68,10 @@ export async function Login(req, res) {
     try {
         const pool = getPool();
         const { email, username, password } = req.body;
+        const identifier = email || username;
         const exists = await pool.query(
-            'select id, password from users where email = $1 or username = $2',
-            [email, username]
+            'select id, password from users where email = $1 or username = $1',
+            [identifier]
         );
         
         if(exists.rows.length == 0){
