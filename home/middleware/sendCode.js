@@ -33,10 +33,10 @@ export default async function SendCode(req, res, next) {
         await mailjet.post('send', { version: 'v3.1' }).request({
             Messages: [
                 {
-                    From: { Email: 'no-reply@kelseywilliams.co', Name: 'Auth System'},
+                    From: { Email: 'no-reply@kelseywilliams.co', Name: 'kelseywilliams.co'},
                     To: [{Email: email }],
                     Subject: 'Your verification code',
-                    TextPart: `Your verification code for kelseywilliams.co is ${code}. Do not share this code with anyone.`
+                    TextPart: `Your verification code is ${code}. Do not share this code with anyone.  This code will expire in 5 minutes.`
                 },
             ],
         });

@@ -8,9 +8,26 @@ import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
 const server = express();
 
+const allowedOrigins = [
+    "https://kelseywiliams.co",
+    "https://www.kelseywilliams.co"
+]
+
+const corsOptions = {
+    origin : (origin, cb) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            cb(null, true);
+        } else {
+            cb(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authrization"],
+}
 // CONFIGURE HEADER INFORMATION 
 // Allow request from any source. In real production, this should be limited to allowed origins only
-server.use(cors());
+server.use(cors(corsOptions));
 server.disable("x-powered-by"); // Reduce fingerprinting
 server.use(cookieParser());
 server.use(express.urlencoded({ extended: false }));
