@@ -1,10 +1,22 @@
 import express from "express";
-import { Register, Login, VerifyUser, VerifyAdmin, Logout, Delete, SendCodeCtlr } from "../controllers/auth.js";
+import { 
+    Register, 
+    Login, 
+    VerifyUser, 
+    VerifyAdmin, 
+    Logout, 
+    Delete, 
+    SendCodeCtlr, 
+    RecoveryCodeCtlr,
+    ResetPassword
+} from "../controllers/auth.js";
 import Validate from "../middleware/validateRequest.js";
 import Verify from "../middleware/verify.js";
 import VerifyRole from "../middleware/verifyRole.js";
 import SendCode from "../middleware/sendCode.js";
 import CheckCode from "../middleware/checkCode.js";
+import CheckRecovery from "../middleware/checkRecovery.js";
+import RecoveryCode from "../middleware/recoveryCode.js"
 import { check } from "express-validator";
 
 const router = express.Router();
@@ -81,5 +93,16 @@ router.post(
     "/delete",
     Verify,
     Delete
+)
+
+router.post(
+    "/send-recovery",
+    RecoveryCode,
+    RecoveryCodeCtlr
+)
+router.post(
+    "/forgot",
+    CheckRecovery,
+    ResetPassword
 )
 export default router;

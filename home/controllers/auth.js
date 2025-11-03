@@ -99,7 +99,6 @@ export async function Login(req, res) {
                     sameSite: "None",
                 };
                 res.cookie("SessionID", token, options); 
-                logger.info(`${username} at ${email} logged in.`)
                 return res.status(200).json({      
                     message: "Successfully logged in."
                 })
@@ -164,7 +163,6 @@ export async function Logout(req, res){
 
         if (result === 'OK'){
             res.setHeader('Clear-Site-Data', '"cookies"');
-            logger.info(`${req.user.username} successfully logged out.`)
             return res.status(200).json({ 
                 message: 'Successfully logged out.' 
             });
@@ -235,3 +233,59 @@ export async function SendCodeCtlr(req, res){
         })
     }
 }
+
+export async function RecoveryCodeCtlr(req, res){
+    try{
+        return res.status(200).json({
+            message: "Recovery code sent."
+        }) 
+    } catch (err){
+        logger.error(err);
+        return res.status(500).json({
+            message: err
+        })
+    }
+}
+
+export async function ResetPassword(req, res) {
+    try {
+        const pool = getPool();
+        const { password, email } = req.body;
+
+        // Check if user exists
+        const exists = await pool.query(
+            'SELECT id, username FROM users WHERE email = $1',
+            [email]
+        );
+
+        if (exists.rows.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: "An account with that email couldn't be found."
+            });
+        }
+
+        const user = exists.rows[0];
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Update user password
+        await pool.query(
+            'UPDATE users SET password = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+            [hashedPassword, user.id]
+        );
+
+        logger.info(`Password reset for user ${user.username} (${email})`);
+
+        return res.status(200).json({
+            message: "Password updated successfully."
+        });
+
+    } catch (err) {
+        logger.error("Password reset failed:", err);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+}
+

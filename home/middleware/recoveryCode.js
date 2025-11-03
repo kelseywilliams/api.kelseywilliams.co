@@ -7,7 +7,7 @@ import logger from '../utils/logger.js';
 
 const mailjet = Mailjet.apiConnect(MAILJET_API_KEY, MAILJET_SECRET);
 
-export default async function SendCode(req, res, next) {
+export default async function recoveryCode(req, res, next) {
     try {
         const  { email } = req.body;
         if(!email) return res.status(400).json({
@@ -21,20 +21,20 @@ export default async function SendCode(req, res, next) {
             'select * from users where email = $1',
             [email]
         )
-        if(exists.rows.length > 0){
-            return res.status(409).json({             
-                message: "An account with that email already exists."
+        if(exists.rows.length == 0){
+            return res.status(404).json({             
+                message: "An account with that email couldn't be found."
             });
         }
-        await client.setEx(`verify:${email}`, 300, code);
+        await client.setEx(`recovery:${email}`, 300, code);
 
         await mailjet.post('send', { version: 'v3.1' }).request({
             Messages: [
                 {
                     From: { Email: 'no-reply@kelseywilliams.co', Name: 'kelseywilliams.co'},
                     To: [{Email: email }],
-                    Subject: 'Your verification code',
-                    TextPart: `Your verification code is ${code}. Do not share this code with anyone.  This code will expire in 5 minutes.`
+                    Subject: 'Your account recovery code',
+                    TextPart: `Your account recovery code is ${code}. Do not share this code with anyone.  This code will expire in 5 minutes.`
                 },
             ],
         });
