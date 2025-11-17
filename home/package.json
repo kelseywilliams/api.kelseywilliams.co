@@ -28,6 +28,7 @@
     "node-mailjet": "^6.0.11",
     "pg": "^8.16.3",
     "redis": "^5.8.3",
+    "redlock": "^5.0.0-beta.2",
     "winston": "^3.18.3",
     "winston-daily-rotate-file": "^5.0.0"
   }
