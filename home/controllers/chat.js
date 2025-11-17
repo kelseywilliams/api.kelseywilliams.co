@@ -44,7 +44,7 @@ export async function GetNext(req, res){
     try {
         const { last_seen_id } = req.body;
 
-        if(!last_seen_id || last_seen_id < 0){
+        if(last_seen_id === null || last_seen_id < 0){
             return res.status(400).json({
                 message: "Last seen id must not be empty or negative."
             })
