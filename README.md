@@ -17,6 +17,14 @@ create table if not exists users (
     created_at timestamp with time zone default current_timestamp,
     updated_at timestamp with time zone default current_timestamp
 );
+
+CREATE TABLE IF NOT EXISTS world_chat_messages (
+    id          BIGSERIAL PRIMARY KEY,
+    username    varchar(100) not null,
+    content     TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at  TIMESTAMPTZ
+);
 ```
 #### Redis
 
