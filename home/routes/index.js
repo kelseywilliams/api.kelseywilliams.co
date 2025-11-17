@@ -1,19 +1,7 @@
 import Auth from "./auth.js";
+import Chat from "./chat.js";
 const Router = (server) => {
     server.use("/auth", Auth);
-    server.get("/", (req, res) => {
-        try {
-            res.status(200).json({
-                status: "success",
-                data: [],
-                message: "Welcome to our API homepage!",
-            });
-        } catch (err) {
-            res.status(500).json({
-                status: "error",
-                message: "Internal Server Error",
-            });
-        }
-    })
+    server.use("/chat", Chat)
 };
 export default Router;

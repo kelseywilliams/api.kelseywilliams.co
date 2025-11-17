@@ -47,7 +47,7 @@ Make a call to the api by calling `https://api.kelseywilliams.co` + `/route/` + 
 
 example api call `POST https://api.kelseywilliams.co/auth/login`
 
-Current available routes: `auth`
+Current available routes: `auth`, `chat`
 ### /auth/
 Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.  Request method for all endpoints is `post`
 #### **send-code**
@@ -182,4 +182,81 @@ response codes:
         401 This session is invalid or expired.  Please login.
         
         200 Account deleted successfully.
+
+### /chat/
+Description: Use the /chat/ route to create and manage chats in the postgres database.  Request method for all endpoints is `post`
+#### **new**
+
+Description: Creates a new chat. Requires that the user be logged in
+
+request body:
+```
+{
+    "content": <user content>
+}
+```
+response codes:
+    
+    400 Chat content is required.
+    
+    201 Verification code sent.
+    
+
+response body:
+```
+{
+"id": id,
+"username": username,
+"content": content,
+"created_at": created_at
+}
+```
+#### **read**
+
+Description: Returns the last 100 chats after the last seen id.
+For example, setting the last seen id to 0 will return chats 1-100.
+Setting the last seen id to 100 will return chats 101 to 200.
+
+request body:
+```
+{
+"last_seen_id": id
+}
+```
+
+response body:
+```
+{
+"chats": rows,
+"count": rows.length
+}
+```
+
+response codes:
+    
+    400 Last seen id must not be empty or negative
+
+    200
+
+
+#### **delete**
+
+Description:  Users must be logged in or logged in as admin
+
+response body:
+```
+{
+    "id": id
+}
+```
+where "id" is the numerical id of the chat to be deleted.
+
+response codes:
+    
+    400 User object cannot be empty
+    
+    400 Message id to delete cannot be empty
+
+    404 Chat was not found or user not logged in.
+    
 
