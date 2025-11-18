@@ -97,6 +97,8 @@ export async function Login(req, res) {
                     httpOnly: true, // The cookie is only accessible by the web server
                     secure: true,
                     sameSite: "None",
+                    domain: ".kelseywilliams.co",
+                    path: "/"
                 };
                 res.cookie("SessionID", token, options); 
                 return res.status(200).json({      
