@@ -43,7 +43,9 @@ export async function Register(req, res) {
                 maxAge: 20 * 60 * 1000,
                 httpOnly: true,
                 secure: true,
-                sameSite: "None"
+                sameSite: "None",
+                domain: ".kelseywilliams.co",
+                path: "/"
             }
 
             res.cookie("SessionID", token, options);
