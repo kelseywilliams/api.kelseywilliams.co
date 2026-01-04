@@ -132,7 +132,6 @@ export async function Login(req, res) {
 
 export async function VerifyUser(req, res) {
     try {
-        logger.info(req);
         return res.status(200).json({    
             id: req.id,
             username: req.username,
