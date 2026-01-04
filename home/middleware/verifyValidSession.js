@@ -1,12 +1,14 @@
 import jwt from "jsonwebtoken";
 import { PUBLIC_KEY } from "../config/index.js";
 import { getRedisClient } from "../utils/redis.js";
+import { getPool } from "../utils/postgres.js";
 import logger from"../utils/logger.js"
 
 
 export default async function VerifyValidSession(req, res, next) {
     try {
         const client = getRedisClient();
+        const pool = await getPool();
         const token = req.cookies.SessionID;
         
         if (!token) {
@@ -28,7 +30,13 @@ export default async function VerifyValidSession(req, res, next) {
                 { algorithms: ["RS256"] }
             );
 
-            req.username = verify.username;
+            let query = `select username from users where id = $1`
+            const exists = await pool.query(query, [verify.id]);
+            if (exists.rows.length == 0){
+                throw Error("User no longer exists.")
+            }
+            const user = exists.rows[0]
+            req.username = user.username;
 
             next();
 

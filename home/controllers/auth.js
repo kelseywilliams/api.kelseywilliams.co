@@ -32,9 +32,10 @@ export async function Register(req, res) {
         )
 
         if (result.rows && result.rows.length > 0) {
+            const user = result.rows[0];
             const token = jwt.sign(
                 {
-                    username: username
+                    id: user.id
                  }, 
                 PRIVATE_KEY, 
                 {
@@ -76,7 +77,7 @@ export async function Login(req, res) {
         const { email, username, password } = req.body;
         const identifier = email || username;
         const exists = await pool.query(
-            'select id, password from users where email = $1 or username = $1',
+            'select id, username, password from users where email = $1 or username = $1',
             [identifier]
         );
         
@@ -86,8 +87,6 @@ export async function Login(req, res) {
             });
         } else {
             const user = exists.rows[0];
-            if (!username) { username = user.username; }
-
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
    
             if (!isPasswordValid){
@@ -97,7 +96,7 @@ export async function Login(req, res) {
             } else {
                 const token = jwt.sign(
                     {
-                        username: username
+                        id: user.id
                     },
                     PRIVATE_KEY,
                     {
