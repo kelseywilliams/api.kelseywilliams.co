@@ -3,7 +3,7 @@
 ### Dependencies
 `docker`, `mailjet`, `postgres`, `redis`
 #### mailjet
-This api is setup to use mailjet to send email via mailjet's api.  A mailjet account and server with setup domain is required.
+This api is setup to use mailjet to send email via mailjet's api.  A mailjet account and server with setup domain is required.  Once the account and domain are setup you will recieve and api key.  This will be placed in a docker secret later.
 #### Postgres
 Initialize with a table similar to the following 
 ```
@@ -34,19 +34,24 @@ If using ACLs, create a user with `del`, `setex`, `exists` and `get` permissions
 create a secrets folder with the following structure
 ```
  /secrets
-    ├── jwt_secret.txt
+    ├── jwt_public.txt
+    ├── jwt_private.txt
     ├── mailjet_api_key.txt
     ├── mailjet_secret.txt
     ├── postgres_readonly_secret.txt
     ├── postgres_worker_secret.txt
     └── redis_secret.txt
 ```
-It is recommended to generate passwords for all databases and the jwt_token with `openssl rand -hex 32`.  
-Store the hex within the text files with no quotes or newlines.
+It is recommended to generate passwords for all databases with `openssl rand -hex 32`.
 
 Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.txt`
+
 #### Example
 `openssl rand -hex 32 > secrets/jwt_secret.txt`
+
+### JWT Tokens
+This applicaton uses JSON web tokens with a public private RSA key pair in order to verify server authenticity.  After creating the secrets files, to generate the private key, run `openssl genrsa -out ./secrets/jwt_private.txt` and to extract the public key from the private key run `openssl rsa -in ./secrets/jwt_private -pubout -outform PEM -out jwt_public.txt`
+
 ## Run
 Run with `docker-compose up`
 

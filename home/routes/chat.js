@@ -1,8 +1,7 @@
 import express from "express";
 import { Create, GetNext, Delete } from "../controllers/chat.js";
-import Verify from "../middleware/verify.js";
-import VerifyRole from "../middleware/verifyRole.js";
-import VerifyOrRole from "../middleware/verifyOrRole.js";
+import VerifyValidSession from "../middleware/verifyValidSession.js";
+import VerifyAdmin from "../middleware/verifyAdmin.js";
 const router = new express.Router();
 
 // Verify that user is logged in before a allowing a post to be made.
@@ -11,7 +10,7 @@ const router = new express.Router();
 // The client is then free to broadcast its id and message to the rest of the app.
 
 router.post("/new",
-    Verify,
+    VerifyValidSession,
     Create
 );
 
@@ -23,8 +22,9 @@ router.post("/read",
 // Verify if chat is users own.  Else check if user is admin
 // If one of these passes, we can soft delete the account
 router.post("/delete",
-    VerifyOrRole,
-    Delete
+    VerifyValidSession,        // Adds req.username from jwt
+    VerifyAdmin,                // Sets req.admin to true if admin
+    Delete                     // Delete can handle not having req.admin set
 );
 
 export default router;

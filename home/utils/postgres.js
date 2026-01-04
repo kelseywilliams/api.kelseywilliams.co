@@ -40,10 +40,10 @@ export const getPool = () => {
     return pool;
 };
 
-export const disconnectDatabase = async () => {
+export const disconnectPool = async () => {
     if (pool) {
         await pool.end();
-        logger.info("PostgreSQL pool closed");
+        logger.info("PostgreSQL pool disconnected");
         pool = null;
     }
 };

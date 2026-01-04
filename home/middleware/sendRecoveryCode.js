@@ -7,7 +7,7 @@ import logger from '../utils/logger.js';
 
 const mailjet = Mailjet.apiConnect(MAILJET_API_KEY, MAILJET_SECRET);
 
-export default async function recoveryCode(req, res, next) {
+export default async function SendRecoverCode(req, res, next) {
     try {
         const  { email } = req.body;
         if(!email) return res.status(400).json({
@@ -15,7 +15,7 @@ export default async function recoveryCode(req, res, next) {
         });
 
         const code = crypto.randomInt(100000, 999999).toString();
-        const client = await getRedisClient();
+        const client = getRedisClient();
         const pool = getPool();
         const exists = await pool.query(
             'select * from users where email = $1',

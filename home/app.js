@@ -6,11 +6,13 @@ import { connectPool } from "./utils/postgres.js";
 import { PORT } from "./config/index.js";
 import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
+//import shutdown from "./utils/shutdown.js";
 const server = express();
 
 const allowedOrigins = [
-    "https://kelseywilliams.co",
-    "https://www.kelseywilliams.co"
+    "*"
+    // "https://kelseywilliams.co",
+    // "https://www.kelseywilliams.co"
 ]
 
 const corsOptions = {
@@ -36,12 +38,14 @@ server.use(express.json());
 // CONFIGURE ROUTES
 Router(server);
 
+let httpServer;
+
 const startServer = async () => {
     try {
         await connectRedis();
         await connectPool();
 
-        server.listen(PORT, () => {
+        httpServer = server.listen(PORT, () => {
             logger.info(`Server running on port ${PORT}`);
         });
     } catch (err) {
@@ -49,5 +53,18 @@ const startServer = async () => {
         process.exit(1);
     }
 }
+
+// process.on("SIGINT", () => shutdown(httpServer, "SIGINT"));
+// process.on("SIGTERM", () => shutdown(httpServer, "SIGTERM"));
+
+// process.on("uncaughtException", async (err) => {
+//     logger.error(err);
+//     await shutdown(httpServer, "uncaughtException")
+// })
+
+// process.on("unhandledRejection", async (reason) => {
+//     logger.error(reason);
+//     await shutdown(httpServer, "unhandledRejection");
+// })
 
 await startServer();

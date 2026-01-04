@@ -1,13 +1,13 @@
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { getPool } from "../utils/postgres.js";
 import { getRedisClient } from "../utils/redis.js";
 import logger from "../utils/logger.js";
-import jwt from "jsonwebtoken";
-import { TOKEN, USER, TOKEN_EXPIRY_MINS } from "../config/index.js";
+import { PRIVATE_KEY, PUBLIC_KEY, USER, TOKEN_EXPIRY_MINS } from "../config/index.js";
 
 export async function Register(req, res) {
     try {
-        const pool = getPool();
+        const pool = await getPool();
         const { username, password, email } = req.body;
         const role = USER;
         // Check if user exsits
@@ -32,11 +32,15 @@ export async function Register(req, res) {
         )
 
         if (result.rows && result.rows.length > 0) {
-            const newUser = result.rows[0];
-
-            const payload = { id: newUser.id };
-            const token = jwt.sign(payload, TOKEN, {
-                expiresIn: `${TOKEN_EXPIRY_MINS}m`,
+            const token = jwt.sign(
+                {
+                    username: username
+                 }, 
+                PRIVATE_KEY, 
+                {
+                    algorithm: "RS256",
+                    expiresIn: `${TOKEN_EXPIRY_MINS}m`,
+                    //issuer: "https://api.kelseywilliams.co"
             });
             
             let options = {
@@ -68,7 +72,7 @@ export async function Register(req, res) {
 
 export async function Login(req, res) {
     try {
-        const pool = getPool();
+        const pool = await getPool();
         const { email, username, password } = req.body;
         const identifier = email || username;
         const exists = await pool.query(
@@ -83,16 +87,23 @@ export async function Login(req, res) {
         } else {
             const user = exists.rows[0];
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
-
+   
             if (!isPasswordValid){
                 return res.status(401).json({   
                     message: "Invalid username or password."
                 })
             } else {
-                const payload = { id: user.id }
-                const token = jwt.sign(payload, TOKEN, {
-                    expiresIn: `${TOKEN_EXPIRY_MINS}m`,
-                });
+                const token = jwt.sign(
+                    {
+                        username: username
+                    },
+                    PRIVATE_KEY,
+                    {
+                        algorithm: "RS256",
+                        expiresIn: `${TOKEN_EXPIRY_MINS}m`
+                        //issuer: "https://api.kelseywilliams.co"
+                    }
+                );
 
                 let options = {
                     maxAge: 20 * 60 * 1000, // would expire in 20minutes
@@ -102,7 +113,9 @@ export async function Login(req, res) {
                     domain: ".kelseywilliams.co",
                     path: "/"
                 };
+                //TODO: Change session ID to jwt?
                 res.cookie("SessionID", token, options); 
+
                 return res.status(200).json({      
                     message: "Successfully logged in."
                 })
@@ -130,7 +143,7 @@ export async function VerifyUser(req, res) {
     }
 }
 
-export async function VerifyAdmin(req, res) {
+export async function VerifyAdminCtlr(req, res) {
     try {
         return res.status(200).json({        
             data: req.user,
@@ -145,30 +158,44 @@ export async function VerifyAdmin(req, res) {
     }
 }
 
+function processTokenForExp(req) {
+    const token = req.cookies.SessionID;
+
+    if (!token) { return res.status.json({
+        message: "Invalid or expired session. Please log in"
+    })}
+
+    try {
+        const verify = jwt.verify(
+            token,
+            PUBLIC_KEY,
+            { 
+                algorithms: ["RS256"]
+            }
+        );
+        return verify.exp - Math.floor(Date.now() / 1000);
+    } catch {
+        return res.status(400).json({
+            message: "Invalid or expired session.  Please log in"
+        });
+    }
+}
+
 export async function Logout(req, res){
     try {
         const client = getRedisClient();
-        
-        const authHeader = req.headers["cookie"];
-        if (!authHeader) {
-            return res.status(204);
-        }
-        const cookie = authHeader.split('=')[1];
-        const token = cookie.split(';')[0];
-        const decoded = jwt.decode(token);
-        const jwtExpInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
+        const jwtExpInSeconds = processTokenForExp(req);
+ 
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
-            return res.status(204).json({
-                message: "Already loggged out."
-            })
+            throw new Error("Invalid or expired session. Please log in");
         }
         const result = await client.setEx(token, jwtExpInSeconds, 'blacklisted');
 
-        if (result === 'OK'){
+        if (result == "OK") {
             res.setHeader('Clear-Site-Data', '"cookies"');
-            return res.status(200).json({ 
-                message: 'Successfully logged out.' 
+            return res.status(200).json({
+                message: 'Successfully logged out.'
             });
         } else {
             throw new Error("Encountered error while logging out.");
@@ -186,27 +213,19 @@ export async function Delete(req, res){
     try {
         const client = getRedisClient();
         const pool = getPool();
-        
-        const authHeader = req.headers["cookie"];
-        if (!authHeader) {
-            return res.status(204);
-        }
-        const cookie = authHeader.split('=')[1];
-        const token = cookie.split(';')[0];
-        const decoded = jwt.decode(token);
-        const jwtExpInSeconds = decoded.exp - Math.floor(Date.now() / 1000);
-        // TODO: What the hell is this.  Fix it.
+        const jwtExpInSeconds = processTokenForExp(req);
+
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
-            throw new Error("Failed to deleted account. Invalid or expired session.");
+            throw new Error("Invalid or expired session. Please log in");
         }
         const result = await client.setEx(token, jwtExpInSeconds, 'blacklisted');
 
         if (result === 'OK'){
             res.setHeader('Clear-Site-Data', '"cookies"');
             const result = await pool.query(
-                'delete from users where id = $1 returning id, username',
-                [req.user.id]
+                'delete from users where username = $1 returning id, username',
+                [req.username]
             );
             if (result.rows.length > 0) {
                 return res.status(200).json({   
@@ -258,7 +277,7 @@ export async function ResetPassword(req, res) {
 
         // Check if user exists
         const exists = await pool.query(
-            'SELECT id, username FROM users WHERE email = $1',
+            'select id, username FROM users WHERE email = $1',
             [email]
         );
 

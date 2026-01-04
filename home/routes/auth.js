@@ -3,20 +3,20 @@ import {
     Register, 
     Login, 
     VerifyUser, 
-    VerifyAdmin, 
+    VerifyAdminCtlr, 
     Logout, 
     Delete, 
     SendCodeCtlr, 
     RecoveryCodeCtlr,
     ResetPassword
 } from "../controllers/auth.js";
-import Validate from "../middleware/validateRequest.js";
-import Verify from "../middleware/verify.js";
-import VerifyRole from "../middleware/verifyRole.js";
-import SendCode from "../middleware/sendCode.js";
-import CheckCode from "../middleware/checkCode.js";
-import CheckRecovery from "../middleware/checkRecovery.js";
-import RecoveryCode from "../middleware/recoveryCode.js"
+import ValidateRequest from "../middleware/validateRequest.js";
+import VerifyValidSession from "../middleware/verifyValidSession.js";
+import VerifyAdmin from "../middleware/verifyAdmin.js";
+import SendRegisterCode from "../middleware/sendRegisterCode.js";
+import ValidateRegisterCode from "../middleware/validateRegisterCode.js";
+import ValidateRecoveryCode from "../middleware/validateRecoveryCode.js";
+import sendRecoveryCode from "../middleware/sendRecoveryCode.js"
 import { check } from "express-validator";
 
 const router = express.Router();
@@ -26,7 +26,7 @@ router.post(
     .isEmail()
     .withMessage("Enter a valid email address")
     .normalizeEmail(),
-    SendCode,
+    SendRegisterCode,
     SendCodeCtlr
 )
 router.post(
@@ -45,8 +45,8 @@ router.post(
         .notEmpty()
         .isLength({min: 8 })
         .withMessage("Must be at lest 8 chars long"),
-    CheckCode,
-    Validate,
+    ValidateRegisterCode,
+    ValidateRequest,
     Register
 );
 
@@ -66,43 +66,43 @@ router.post(
         .isEmpty() // Check if it's not empty, now that we're running conditionally
         .withMessage("Username is required (if email is not provided)"),
     check("password").not().isEmpty(),
-    Validate,
+    ValidateRequest,
     Login
 );
 
 router.post(
     "/user", 
-    Verify, 
+    VerifyValidSession, 
     VerifyUser
 );
 
 router.post(
     "/admin", 
-    Verify, 
-    VerifyRole, 
-    VerifyAdmin
+    VerifyValidSession, 
+    VerifyAdmin, 
+    VerifyAdminCtlr
 )
 
 router.post(
     "/logout",
-    Verify,
+    VerifyValidSession,
     Logout
 )
 
 router.post(
     "/delete",
-    Verify,
+    VerifyValidSession,
     Delete
 )
 
 router.post(
     "/send-recovery",
-    RecoveryCode,
+    sendRecoveryCode,
     RecoveryCodeCtlr
 )
 router.post(
     "/forgot",
-    CheckRecovery,
+    ValidateRecoveryCode,
     ResetPassword
 )
 export default router;

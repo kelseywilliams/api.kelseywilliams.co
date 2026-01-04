@@ -6,7 +6,8 @@ dotenv.config();
 const postgres_worker_pwd = fs.readFileSync('/run/secrets/postgres_worker_secret', 'utf-8').trim();
 const postgres_readonly_pwd = fs.readFileSync('/run/secrets/postgres_readonly_secret', 'utf-8').trim();
 const redis_pwd = fs.readFileSync('/run/secrets/redis_secret', 'utf-8').trim();
-const TOKEN = fs.readFileSync('/run/secrets/jwt_secret', 'utf-8').trim();
+const PRIVATE_KEY = fs.readFileSync('/run/secrets/jwt_private', 'utf-8').trim();
+const PUBLIC_KEY = fs.readFileSync('/run/secrets/jwt_public', 'utf-8').trim();
 const MAILJET_API_KEY = fs.readFileSync('/run/secrets/mailjet_api_key', 'utf-8').trim();
 const MAILJET_SECRET = fs.readFileSync('/run/secrets/mailjet_secret', 'utf-8').trim();
 
@@ -23,7 +24,8 @@ export {
     REDIS_URI, 
     POSTGRES_WORKER_URI,
     PORT, 
-    TOKEN,
+    PRIVATE_KEY,
+    PUBLIC_KEY,
     ADMIN,
     USER,
     TOKEN_EXPIRY_MINS,

@@ -1,12 +1,11 @@
 import { getPool } from "../utils/postgres.js";
 import logger from "../utils/logger.js";
-import { ADMIN } from "../config/index.js";
 
 export async function Create(req, res){
-    const pool = getPool();
+    const pool = await getPool();
 
     try {
-        const username = req.user.username;
+        const username = req.username;
         const { content } = req.body;
 
         if (!content || typeof content !== "string" || !content.trim()){
@@ -24,12 +23,7 @@ export async function Create(req, res){
         const { rows } = await pool.query(query, [username, content.trim()]);
         const message = rows[0];
 
-        return res.status(201).json({
-            id: message.id,
-            username: message.username,
-            content: message.content,
-            created_at: message.created_at,
-        });
+        return res.status(201).json(message);
     } catch(err) {
         logger.error("Error creating chat:", err);
         return res.status(500).json({
@@ -79,20 +73,10 @@ export async function GetNext(req, res){
 }
 
 export async function Delete(req, res){
-    const pool = getPool();
-
+    const pool = await getPool();
+    const username = req.username;
+    const userRole = (req?.admin) ? "admin" : "user"
     try {
-        if (!req.user){
-            return res.status(400).json({
-                message: "User object cannot be emtpy."
-            })
-        }
-        const username = req.user.username;
-        let  userRole = req.user.role;
-        if (userRole == ADMIN){
-            userRole = "admin"
-        }
-
         const { id } = req.body;
 
         if(!id){
@@ -101,8 +85,7 @@ export async function Delete(req, res){
             });
         }
 
-
-        const query = `
+        let query = `
             update world_chat_messages
             set deleted_at = NOW()
             where id = $1
@@ -120,7 +103,7 @@ export async function Delete(req, res){
             })
         }
 
-        logger.info(`Chat ${deleted.id} deleted by user ${deleted.username}`);
+        //logger.info(`Chat ${deleted.id} deleted by user ${deleted.username}`);
 
         return res.status(200).json({
             id: deleted.id,

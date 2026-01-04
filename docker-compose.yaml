@@ -1,11 +1,13 @@
 services:
     api:
         build: .
+        init: true
         container_name: api
         secrets:
             - mailjet_api_key
             - mailjet_secret
-            - jwt_secret
+            - jwt_private
+            - jwt_public
             - postgres_worker_secret
             - postgres_readonly_secret
             - redis_secret
@@ -21,14 +23,17 @@ services:
             timeout: 3s
             start_period: 30s
             retries: 3
+        stop_grace_period: 15s
 
 secrets:
     mailjet_api_key:
         file:  ./secrets/mailjet_api_key.txt
     mailjet_secret:
         file: ./secrets/mailjet_secret.txt
-    jwt_secret:
-        file: ./secrets/jwt_secret.txt
+    jwt_private:
+        file: ./secrets/jwt_private.txt
+    jwt_public:
+        file: ./secrets/jwt_public.txt
     postgres_worker_secret:
         file: ./secrets/postgres_worker_secret.txt
     postgres_readonly_secret:
