@@ -30,13 +30,16 @@ export default async function VerifyValidSession(req, res, next) {
                 { algorithms: ["RS256"] }
             );
 
-            let query = `select username from users where id = $1`
+            let query = `select id, username, email, role from users where id = $1`
             const exists = await pool.query(query, [verify.id]);
             if (exists.rows.length == 0){
                 throw Error("User no longer exists.")
             }
             const user = exists.rows[0]
+            req.id = user.id;
             req.username = user.username;
+            req.email = user.email;
+            req.role = user.role;
 
             next();
 
