@@ -40,7 +40,7 @@ export async function Register(req, res) {
                 {
                     algorithm: "RS256",
                     expiresIn: `${TOKEN_EXPIRY_MINS}m`,
-                    //issuer: "https://api.kelseywilliams.co"
+                    issuer: "https://api.kelseywilliams.co"
             });
             
             let options = {
@@ -100,8 +100,8 @@ export async function Login(req, res) {
                     PRIVATE_KEY,
                     {
                         algorithm: "RS256",
-                        expiresIn: `${TOKEN_EXPIRY_MINS}m`
-                        //issuer: "https://api.kelseywilliams.co"
+                        expiresIn: `${TOKEN_EXPIRY_MINS}m`,
+                        issuer: "https://api.kelseywilliams.co"
                     }
                 );
 

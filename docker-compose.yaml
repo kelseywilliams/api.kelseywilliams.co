@@ -1,7 +1,7 @@
 services:
     api:
         build: .
-        init: true
+        #init: true
         container_name: api
         secrets:
             - mailjet_api_key
@@ -23,7 +23,7 @@ services:
             timeout: 3s
             start_period: 30s
             retries: 3
-        stop_grace_period: 15s
+        #stop_grace_period: 15s
 
 secrets:
     mailjet_api_key:
