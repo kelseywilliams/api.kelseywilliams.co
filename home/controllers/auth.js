@@ -87,7 +87,7 @@ export async function Login(req, res) {
         } else {
             const user = exists.rows[0];
             if (!username) { username = user.username; }
-            
+
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
    
             if (!isPasswordValid){
@@ -134,7 +134,7 @@ export async function Login(req, res) {
 export async function VerifyUser(req, res) {
     try {
         return res.status(200).json({    
-            data: req.user,
+            data: req.username,
             message: "User verfied."
         })
     } catch (err) {
