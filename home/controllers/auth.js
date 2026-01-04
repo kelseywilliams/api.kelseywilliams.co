@@ -133,8 +133,10 @@ export async function Login(req, res) {
 export async function VerifyUser(req, res) {
     try {
         return res.status(200).json({    
-            data: req.username,
-            message: "User verfied."
+            id: req.id,
+            username: req.username,
+            email: req.email,
+            role: req.role
         })
     } catch (err) {
         logger.error(err);
@@ -147,8 +149,10 @@ export async function VerifyUser(req, res) {
 export async function VerifyAdminCtlr(req, res) {
     try {
         return res.status(200).json({        
-            data: req.user,
-            message: "Admin role verified."
+            id: req.id,
+            username: req.username,
+            email: req.email,
+            role: req.role
         })
     } catch (err) {
         logger.error(err);
