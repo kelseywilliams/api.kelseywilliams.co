@@ -52,6 +52,13 @@ Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.
 ### JWT Tokens
 This applicaton uses JSON web tokens with a public private RSA key pair in order to verify server authenticity.  After creating the secrets files, to generate the private key, run `openssl genrsa -out ./secrets/jwt_private.txt` and to extract the public key from the private key run `openssl rsa -in ./secrets/jwt_private -pubout -outform PEM -out jwt_public.txt`
 
+### .env
+The current .env follows the structure
+PORT=3028
+ADMIN=<random 32 bit hex string >
+USER=<random 32 bit hex string>
+TOKEN_EXPIRY_MINS=20
+
 ## Run
 Run with `docker-compose up`
 
