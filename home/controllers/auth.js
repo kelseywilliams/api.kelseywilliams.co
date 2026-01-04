@@ -86,6 +86,8 @@ export async function Login(req, res) {
             });
         } else {
             const user = exists.rows[0];
+            if (!username) { username = user.username; }
+            
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
    
             if (!isPasswordValid){
@@ -158,9 +160,7 @@ export async function VerifyAdminCtlr(req, res) {
     }
 }
 
-function processTokenForExp(req) {
-    const token = req.cookies.SessionID;
-
+function processTokenForExp(token) {
     if (!token) { return res.status.json({
         message: "Invalid or expired session. Please log in"
     })}
@@ -184,7 +184,8 @@ function processTokenForExp(req) {
 export async function Logout(req, res){
     try {
         const client = getRedisClient();
-        const jwtExpInSeconds = processTokenForExp(req);
+        const token = req.cookies.SessionID;
+        const jwtExpInSeconds = processTokenForExp(token);
  
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
@@ -213,7 +214,8 @@ export async function Delete(req, res){
     try {
         const client = getRedisClient();
         const pool = getPool();
-        const jwtExpInSeconds = processTokenForExp(req);
+        const token = req.cookies.SessionID;
+        const jwtExpInSeconds = processTokenForExp(token);
 
         if (jwtExpInSeconds <= 0) {
             res.setHeader('Clear-Site-Data', '"cookies"');
