@@ -29,6 +29,7 @@ export default async function VerifyValidSession(req, res, next) {
             );
 
             req.username = verify.username;
+            res.username = verify.username;
 
             next();
 
