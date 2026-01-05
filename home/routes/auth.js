@@ -70,13 +70,13 @@ router.post(
     Login
 );
 
-router.post(
+router.get(
     "/user", 
     VerifyValidSession, 
     VerifyUser
 );
 
-router.post(
+router.get(
     "/admin", 
     VerifyValidSession, 
     VerifyAdmin, 
@@ -89,7 +89,7 @@ router.post(
     Logout
 )
 
-router.post(
+router.delete(
     "/delete",
     VerifyValidSession,
     Delete
