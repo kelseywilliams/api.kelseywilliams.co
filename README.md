@@ -69,8 +69,10 @@ example api call `POST https://api.kelseywilliams.co/auth/login`
 
 Current available routes: `auth`, `chat`
 ### /auth/
-Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.  Request method for all endpoints is `post`
+Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.
 #### **send-code**
+
+POST
 
 Description: Sends email verification code
 
@@ -85,6 +87,8 @@ response codes:
     200 Verification code sent.
     
 #### **register**
+
+POST
 
 Description: A call to this endpoint should always come after a call to send-code.  The user will be logged in after registering.
 
@@ -111,6 +115,9 @@ response codes:
 a cookie will be sent in the header under "SessionID"
 
 #### **login**
+
+POST
+
 response body:
 ```
 {
@@ -130,6 +137,8 @@ response codes:
 a cookie will be sent in the header under "SessionID".
 
 #### **user**
+
+GET
 
 Description: Use this endpoint to verify that a given user is still logged in and to retrieve their id,email, username, and role
 
@@ -153,6 +162,8 @@ response body:
 ```
 
 #### **admin**
+
+GET
 
 Description: Use this endpoint to verify that the user has adminstrator privileges
 
@@ -181,6 +192,8 @@ response body:
 
 #### **logout**
 
+POST
+
 Include session cookie in header.
 
 response codes:
@@ -192,6 +205,8 @@ response codes:
         200 Successfully logged out.
 
 #### **delete**
+
+DELETE
     
 Description: deletes account.  Action can only be performed while the user is logged into their account.
 
