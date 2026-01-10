@@ -5,11 +5,11 @@ export default async function VerifyAdmin(req, res, next){
     try{
         const role = req.role;
         if (role != ADMIN) {
-            return res.status(403).json({
-                message: "Insufficient privileges."
-            });  
+            req.admin = false;  
+        } else {
+            req.admin = true;
         }
-        req.admin = true;
+
 
         next();
 

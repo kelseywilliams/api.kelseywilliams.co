@@ -6,8 +6,13 @@ export async function Create(req, res){
 
     try {
         const username = req.username;
-        const { content } = req.body;
+        const { room, content } = req.body;
 
+        if (!room || typeof room !== "string" || !room.trim()){
+            return res.status(400).json({
+                message: "Room is required."
+            });
+        }
         if (!content || typeof content !== "string" || !content.trim()){
             return res.status(400).json({
                 message: "Chat content is required."
@@ -15,12 +20,12 @@ export async function Create(req, res){
         }
 
         const query = `
-            insert into world_chat_messages(username, content)
-            values ($1, $2)
-            returning id, username, content, created_at;
+            insert into chats (username, room, content)
+            values ($1, $2, $3)
+            returning id, username, room, content, created_at;
         `;
 
-        const { rows } = await pool.query(query, [username, content.trim()]);
+        const { rows } = await pool.query(query, [username, room.trim(), content.trim()]);
         const message = rows[0];
 
         return res.status(201).json(message);
@@ -50,7 +55,7 @@ export async function GetNext(req, res){
                 u.username as display_username,
                 m.content,
                 m.created_at
-            from world_chat_messages m
+            from chats m
             join users u on m.username = u.username
             where m.deleted_at is null
             and m.id > $1
@@ -75,7 +80,9 @@ export async function GetNext(req, res){
 export async function Delete(req, res){
     const pool = await getPool();
     const username = req.username;
+    logger.info(req?.admin);
     const userRole = (req?.admin) ? "admin" : "user"
+    logger.info(userRole);
     try {
         const { id } = req.body;
 
@@ -86,7 +93,7 @@ export async function Delete(req, res){
         }
 
         let query = `
-            update world_chat_messages
+            update chats
             set deleted_at = NOW()
             where id = $1
                 and (username = $2 or $3 = 'admin')
