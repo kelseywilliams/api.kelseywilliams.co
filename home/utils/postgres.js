@@ -12,8 +12,8 @@ export const connectPool = async () => {
         pool = new Pool({
             connectionString: POSTGRES_WORKER_URI,
             max: 20, // Maximum number of clients in pool
-            idelTimeoutMillis: 30000,
-            connectionTimeoutMillis: 2000,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 3000,
         });
 
         // Test connection
