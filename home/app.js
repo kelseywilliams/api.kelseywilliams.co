@@ -10,9 +10,8 @@ import logger from "./utils/logger.js";
 const server = express();
 
 const allowedOrigins = [
-    "*"
-    // "https://kelseywilliams.co",
-    // "https://www.kelseywilliams.co"
+    "https://kelseywilliams.co",
+    "https://www.kelseywilliams.co"
 ]
 
 const corsOptions = {
