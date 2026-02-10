@@ -11,7 +11,12 @@ const server = express();
 
 const allowedOrigins = [
     "https://kelseywilliams.co",
-    "https://www.kelseywilliams.co"
+    "https://www.kelseywilliams.co",
+    // "http://localhost:3029",
+    // "http://chat:3029",
+    // "http://chat",
+    "http://localhost",
+    "http://proxy:80"
 ]
 
 const corsOptions = {

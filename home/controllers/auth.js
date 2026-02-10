@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { getPool } from "../utils/postgres.js";
 import { getRedisClient } from "../utils/redis.js";
 import logger from "../utils/logger.js";
-import { PRIVATE_KEY, PUBLIC_KEY, USER, TOKEN_EXPIRY_MINS } from "../config/index.js";
+import { PRIVATE_KEY, PUBLIC_KEY, USER, TOKEN_EXPIRY_MINS, API_DOMAIN, DOMAIN } from "../config/index.js";
 
 export async function Register(req, res) {
     try {
@@ -41,7 +41,7 @@ export async function Register(req, res) {
                 {
                     algorithm: "RS256",
                     expiresIn: `${TOKEN_EXPIRY_MINS}m`,
-                    issuer: "https://api.kelseywilliams.co"
+                    issuer: API_DOMAIN
             });
             
             let options = {
@@ -49,7 +49,7 @@ export async function Register(req, res) {
                 httpOnly: true,
                 secure: true,
                 sameSite: "None",
-                domain: ".kelseywilliams.co",
+                domain: DOMAIN,
                 path: "/"
             }
 
@@ -102,7 +102,7 @@ export async function Login(req, res) {
                     {
                         algorithm: "RS256",
                         expiresIn: `${TOKEN_EXPIRY_MINS}m`,
-                        issuer: "https://api.kelseywilliams.co"
+                        issuer: API_DOMAIN
                     }
                 );
 
@@ -111,7 +111,7 @@ export async function Login(req, res) {
                     httpOnly: true, // The cookie is only accessible by the web server
                     secure: true,
                     sameSite: "None",
-                    domain: ".kelseywilliams.co",
+                    domain: DOMAIN,
                     path: "/"
                 };
                 //TODO: Change session ID to jwt?
