@@ -17,7 +17,9 @@ const {
     PORT, 
     ADMIN,
     USER,
-    TOKEN_EXPIRY_MINS
+    TOKEN_EXPIRY_MINS,
+    API_DOMAIN,
+    DOMAIN
 } = process.env;
 
 export { 
@@ -30,5 +32,7 @@ export {
     USER,
     TOKEN_EXPIRY_MINS,
     MAILJET_API_KEY,
-    MAILJET_SECRET
+    MAILJET_SECRET,
+    API_DOMAIN,
+    DOMAIN
 };
