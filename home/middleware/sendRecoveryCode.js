@@ -7,7 +7,7 @@ import logger from '../utils/logger.js';
 
 const mailjet = Mailjet.apiConnect(MAILJET_API_KEY, MAILJET_SECRET);
 
-export default async function SendRecoverCode(req, res, next) {
+export default async function SendRecoveryCode(req, res, next) {
     try {
         const  { email } = req.body;
         if(!email) return res.status(400).json({
