@@ -58,6 +58,8 @@ PORT=3028
 ADMIN=<random 32 bit hex string >
 USER=<random 32 bit hex string>
 TOKEN_EXPIRY_MINS=20
+API_DOMAIN=proxy:80/api/
+DOMAIN=localhost
 
 ## Run
 Run with `docker-compose up`

@@ -32,7 +32,7 @@ export async function Create(req, res) {
         const query = `
             insert into chats (ulid, username, room, content)
             values ($1, $2, $3, $4)
-            returning id, username, room, content, created_at;
+            returning id, ulid, username, room, content, created_at;
         `;
 
         const { rows } = await pool.query(query, [ulid, username, room.trim(), content.trim()]);
@@ -62,10 +62,8 @@ export async function GetNext(req, res) {
             with filtered_chats as (
             select
                 m.id, m.room, m.username,
-                u.username as display_username,
                 m.content, m.created_at
             from chats m
-            join users u on m.username = u.username
             where m.deleted_at is null
                 and m.room = $1
                 and ($2::integer is null or m.id < $2::integer)
@@ -74,7 +72,6 @@ export async function GetNext(req, res) {
             from filtered_chats
             order by id asc
             limit 100;
-
         `;
 
         const { rows } = await pool.query(query, [room, last_seen_id]);
