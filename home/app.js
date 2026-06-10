@@ -49,7 +49,7 @@ const startServer = async () => {
         await connectRedis();
         await connectPool();
 
-        httpServer = server.listen(PORT, () => {
+        httpServer = server.listen(PORT, (PORT) => {
             logger.info(`Server running on port ${PORT}`);
         });
     } catch (err) {
