@@ -1,6 +1,6 @@
 services:
     api:
-        build: .
+        image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
         #init: true
         container_name: api
         secrets:
