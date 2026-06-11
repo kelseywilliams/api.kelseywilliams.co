@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { connectRedis } from "./utils/redis.js";
-import { connectPool } from "./utils/postgres.js";
+import { connectRedis, getRedisClient } from "./utils/redis.js";
+import { connectPool, getPool } from "./utils/postgres.js";
 import { PORT } from "./config/index.js";
 import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
@@ -39,7 +39,25 @@ server.use(cookieParser());
 server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
 
-// CONFIGURE ROUTES
+// HEALTH ENDPOINTS (k8s probes; no auth)
+// Liveness: is the process up and the event loop responsive? Keep it dependency-free so a
+// transient Redis/Postgres blip can't fail liveness and trigger a pod restart loop.
+server.get("/healthz", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
+// Readiness: should this pod receive traffic? Verify Redis + Postgres are actually usable.
+server.get("/readyz", async (req, res) => {
+    try {
+        await getRedisClient().ping();
+        await getPool().query("SELECT 1");
+        res.status(200).json({ status: "ready" });
+    } catch (err) {
+        logger.warn("Readiness check failed:", err);
+        res.status(503).json({ status: "not ready" });
+    }
+});
+
 Router(server);
 
 let httpServer;

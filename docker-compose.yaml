@@ -1,8 +1,16 @@
 services:
     api:
         image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
+        # build: .
         #init: true
         container_name: api
+        env_file:
+            - ./home/.env
+        environment:                 # <- the analog of the api-config ConfigMap
+            PORT: "3028"
+            TOKEN_EXPIRY_MINS: "20"
+            API_DOMAIN: "proxy:80/api/"
+            DOMAIN: "localhost"
         secrets:
             - mailjet_api_key
             - mailjet_secret
@@ -18,7 +26,7 @@ services:
         ports:
             - "3028:3028"
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:3028"]
+            test: ["CMD", "curl", "-f", "http://localhost:3028/healthz"]
             interval: 10s
             timeout: 3s
             start_period: 30s
