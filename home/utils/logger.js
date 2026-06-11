@@ -1,6 +1,5 @@
 // logger.js
 import { createLogger, format, transports } from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
 
 const logger = createLogger({
   level: 'info',
@@ -10,16 +9,12 @@ const logger = createLogger({
       `[${timestamp}] ${level.toUpperCase()}: ${message}`
     )
   ),
+  // stdout only: k8s and docker capture the container's stdout (kubectl logs / docker logs),
+  // which is the canonical log source. No file transport, so the pod can run with a
+  // read-only root filesystem and no /logs volume.
   transports: [
     new transports.Console(),
   ]
 });
-
-logger.add(new DailyRotateFile({
-  filename: '/logs/app-%DATE%.log',
-  datePattern: 'YYYY-MM-DD',
-  maxSize: '20m',
-  maxFiles: '14d'
-}));
 
 export default logger;
