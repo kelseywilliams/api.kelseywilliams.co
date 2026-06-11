@@ -49,7 +49,10 @@ server.get("/healthz", (req, res) => {
 // Readiness: should this pod receive traffic? Verify Redis + Postgres are actually usable.
 server.get("/readyz", async (req, res) => {
     try {
-        await getRedisClient().ping();
+        // EXISTS is in the app's least-privilege Redis ACL (del/setex/exists/get) and round-trips
+        // to the server, unlike PING which would NOPERM under that documented ACL. The key need
+        // not exist — a 0 reply still proves Redis is reachable and the command is authorized.
+        await getRedisClient().exists("readyz:probe");
         await getPool().query("SELECT 1");
         res.status(200).json({ status: "ready" });
     } catch (err) {
