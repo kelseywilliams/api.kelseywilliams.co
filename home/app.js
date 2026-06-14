@@ -6,7 +6,7 @@ import { connectPool, getPool } from "./utils/postgres.js";
 import { PORT } from "./config/index.js";
 import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
-//import shutdown from "./utils/shutdown.js";
+import shutdown from "./utils/shutdown.js";
 const server = express();
 
 const allowedOrigins = [
@@ -79,17 +79,17 @@ const startServer = async () => {
     }
 }
 
-// process.on("SIGINT", () => shutdown(httpServer, "SIGINT"));
-// process.on("SIGTERM", () => shutdown(httpServer, "SIGTERM"));
+process.on("SIGINT", () => shutdown(httpServer, "SIGINT"));
+process.on("SIGTERM", () => shutdown(httpServer, "SIGTERM"));
 
-// process.on("uncaughtException", async (err) => {
-//     logger.error(err);
-//     await shutdown(httpServer, "uncaughtException")
-// })
+process.on("uncaughtException", async (err) => {
+    logger.error(err);
+    await shutdown(httpServer, "uncaughtException")
+})
 
-// process.on("unhandledRejection", async (reason) => {
-//     logger.error(reason);
-//     await shutdown(httpServer, "unhandledRejection");
-// })
+process.on("unhandledRejection", async (reason) => {
+    logger.error(reason);
+    await shutdown(httpServer, "unhandledRejection");
+})
 
 await startServer();

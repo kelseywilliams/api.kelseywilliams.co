@@ -1,9 +1,15 @@
-FROM node
+FROM node:22-bookworm-slim
+
+ENV NODE_ENV=production
 
 COPY ./home/package.json .
 
-RUN npm install
+COPY ./home/package-lock.json .
+
+RUN npm ci
 
 COPY ./home .
 
-CMD ["npm", "start", "app.js"]
+USER node
+
+CMD ["node", "app.js"]
