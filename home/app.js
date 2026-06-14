@@ -61,6 +61,10 @@ server.get("/readyz", async (req, res) => {
     }
 });
 
+server.get("/", (req, res) => {
+    res.sendFile("public/index.html", { root: import.meta.dirname });
+});
+
 Router(server);
 
 let httpServer;
