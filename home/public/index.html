@@ -19,7 +19,15 @@
   <main>
     <h1><span class="dot">&#9679;</span> api.kelseywilliams.co</h1>
     <p>The API is working</p>
-    <p><code><a href="/healthz">/healthz</a></code> &middot; <code><a href="/readyz">/readyz</a></code></p>
+    <p><code><a id="link-healthz" href="healthz">/healthz</a></code> &middot; <code><a id="link-readyz" href="readyz">/readyz</a></code></p>
   </main>
+  <script>
+    // Build the health links relative to wherever this page is mounted, so they work both
+    // locally (page at /api/ -> /api/healthz) and in prod (page at / -> /healthz), with or
+    // without a trailing slash. Hardcoding /healthz breaks local; hardcoding /api breaks prod.
+    const base = location.pathname.replace(/\/?$/, "/");
+    document.getElementById("link-healthz").href = base + "healthz";
+    document.getElementById("link-readyz").href = base + "readyz";
+  </script>
 </body>
 </html>
