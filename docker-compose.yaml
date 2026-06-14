@@ -1,7 +1,7 @@
 services:
     api:
-        # image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
-        build: .
+        image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
+        # build: .
         #init: true
         container_name: api
         env_file:
