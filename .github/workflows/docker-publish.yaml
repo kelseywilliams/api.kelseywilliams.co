@@ -14,6 +14,8 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write          # cosign keyless signing (GitHub OIDC)
+  security-events: write   # upload Trivy SARIF findings to the Security tab
 
 jobs:
   build-and-push:
@@ -40,6 +42,7 @@ jobs:
 
 
       - name: Build and push Docker image
+        id: build   # named so later steps can reference the pushed image digest
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -50,3 +53,33 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          sbom: true             # attach a Software Bill of Materials (ingredients list)
+          provenance: mode=max   # attach build provenance (how/where it was built)
+
+      # --- Supply chain: scan, then sign the pushed image -----------------------------
+      # All three steps are skipped on pull_request, because nothing is pushed to the
+      # registry on a PR (push: above is false) so there is no image to scan or sign.
+
+      - name: Scan image for vulnerabilities (Trivy)
+        if: github.event_name != 'pull_request'
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}@${{ steps.build.outputs.digest }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: '0'   # report-only: a finding never fails the build (flip to '1' to gate)
+
+      - name: Upload Trivy results to the Security tab
+        if: github.event_name != 'pull_request'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v4.1.2
+
+      - name: Sign the image (keyless, by digest)
+        if: github.event_name != 'pull_request'
+        run: cosign sign --yes ghcr.io/${{ github.repository }}@${{ steps.build.outputs.digest }}
