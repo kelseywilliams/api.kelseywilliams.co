@@ -7,6 +7,7 @@ import { PORT } from "./config/index.js";
 import Router from "./routes/index.js";
 import logger from "./utils/logger.js";
 import shutdown from "./utils/shutdown.js";
+import { fileURLToPath } from "url";
 const server = express();
 
 const allowedOrigins = [
@@ -62,7 +63,9 @@ server.get("/readyz", async (req, res) => {
 });
 
 server.get("/", (req, res) => {
-    res.sendFile("public/index.html", { root: import.meta.dirname });
+    // Resolve an absolute path from this module's URL — robust across Node versions/load contexts
+    // (import.meta.dirname came back undefined in the container build).
+    res.sendFile(fileURLToPath(new URL("./public/index.html", import.meta.url)));
 });
 
 Router(server);
