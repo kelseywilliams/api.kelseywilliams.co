@@ -4,8 +4,6 @@ services:
         # build: .
         #init: true
         container_name: api
-        env_file:
-            - ./home/.env
         environment:                 # <- the analog of the api-config ConfigMap
             PORT: "3028"
             TOKEN_EXPIRY_MINS: "20"

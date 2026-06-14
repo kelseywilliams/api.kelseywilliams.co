@@ -5,3 +5,15 @@ secrets/
 logs/
 *.http
 debug/
+
+*.pem
+*.key
+*.crt
+*.p12
+*.log
+npm-debug.log*
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
