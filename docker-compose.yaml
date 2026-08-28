@@ -1,8 +1,8 @@
 services:
     api:
-        image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
-        # build: .
-        #init: true
+        # image: ghcr.io/kelseywilliams/api.kelseywilliams.co:main
+        build: .
+        init: true # Injects init system (Tini) that handles PID 1 tasks. (Graceful shutdown)
         container_name: api
         environment:                 # <- the analog of the api-config ConfigMap
             PORT: "3028"

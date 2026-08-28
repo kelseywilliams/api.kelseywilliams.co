@@ -5,29 +5,11 @@
 #### mailjet
 This api is setup to use mailjet to send email via mailjet's api.  A mailjet account and server with setup domain is required.  Once the account and domain are setup you will recieve and api key.  This will be placed in a docker secret later.
 #### Postgres
-Initialize with a table similar to the following 
-```
--- Create users table
-create table if not exists users (
-    id serial primary key,
-    email varchar(255) unique not null,
-    username varchar(100) unique not null,
-    role varchar(255) not null,
-    password varchar(255) not null,
-    created_at timestamp with time zone default current_timestamp,
-    updated_at timestamp with time zone default current_timestamp
-);
+A Postgres database must be running. 
 
-CREATE TABLE IF NOT EXISTS world_chat_messages (
-    id          BIGSERIAL PRIMARY KEY,
-    username    varchar(100) not null,
-    content     TEXT NOT NULL,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    deleted_at  TIMESTAMPTZ
-);
-```
 #### Redis
 
+A Redis database must be running.
 If using ACLs, create a user with `del`, `setex`, `exists` and `get` permissions
 
 ### Secrets
@@ -52,24 +34,26 @@ Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.
 ### JWT Tokens
 This applicaton uses JSON web tokens with a public private RSA key pair in order to verify server authenticity.  After creating the secrets files, to generate the private key, run `openssl genrsa -out ./secrets/jwt_private.txt` and to extract the public key from the private key run `openssl rsa -in ./secrets/jwt_private -pubout -outform PEM -out jwt_public.txt`
 
-### .env
-The current .env follows the structure
-PORT=3028
-ADMIN=<random 32 bit hex string >
-USER=<random 32 bit hex string>
-TOKEN_EXPIRY_MINS=20
-API_DOMAIN=proxy:80/api/
-DOMAIN=localhost
 
 ## Run
 Run with `docker-compose up`
 
 ## API Documentation
-Make a call to the api by calling `https://api.kelseywilliams.co` + `/route/` + `endpoint` with the appropriate headers and request body.  Below are outlined the current available routes and their different endpoints and request and response structure.
+Make a call to the api by calling `http://api-domain` + `/route/` + `endpoint` with the appropriate headers and request body.  Below are outlined the currently implemented routes and their different endpoints and their respective requests, response, and response codes.  If documentation for a request or response is not listed, then it does not exist. 
 
 example api call `POST https://api.kelseywilliams.co/auth/login`
 
-Current available routes: `auth`, `chat`
+```
+Method: POST
+request body:
+{
+    "email":email
+    "username":username
+    "password":password
+}
+```
+
+Current available routes: `auth`, `chat`, `homepage`
 ### /auth/
 Description: Use the /auth/ route to create and manage accounts and verify users stored within the postgres database.
 #### **send-code**
@@ -119,8 +103,7 @@ a cookie will be sent in the header under "SessionID"
 #### **login**
 
 POST
-
-response body:
+request body:
 ```
 {
     "email":email
@@ -183,7 +166,7 @@ response codes:
 response body:
 
 ```
-    {
+{
     "id":id,
     "email":email,
     "username":username,
@@ -201,8 +184,6 @@ Include session cookie in header.
 response codes:
         
         401 This session is invalid or expired.  Please login.
-        
-        204 Already loggged out.
         
         200 Successfully logged out.
 
@@ -296,4 +277,109 @@ response codes:
 
     404 Chat was not found or user not logged in.
     
+
+### /resource/
+Description: Use the /resource/ route to access project links and blog links.  
+This link acts as way of managing site resources
+#### **projects**
+
+GET
+
+Description: Retrieve list of project names and links
+
+response body:
+```
+{
+    name : link
+}
+```
+
+response codes:
+    
+    200 OK
+
+#### **projects**
+
+POST
+
+Description: The POST version of the `/projects/` endpoint is used by the system 
+adminstrator in order to add new project routes.  User must be logged in as an 
+admin.
+
+Include session cookie in header.
+
+request body:
+```
+{
+    name : link
+}
+```
+
+response body
+```
+{
+    name:link
+}
+```
+
+Only one link at a time.
+
+response codes:
+
+    400 Bad Request
+
+    201 Created
+
+#### **blog_list**
+
+GET
+
+Description: Retrieve a list of blog titles and links
+
+response body:
+```
+{
+    title : link
+}
+```
+
+response codes:
+
+    200 OK
+
+#### **blog**
+
+POST
+
+Description: Create a new blog post.  Must be logged in as admin.
+
+Include session cookie in header
+
+request body:
+```
+{
+    title: blog_title,
+    date: blog_date,
+    author: blog_author,
+    tags: [],
+    link: blog_link,
+    content: blog_content
+}
+```
+
+response body:
+```
+{
+    title: blog_title,
+    date: blog_date,
+    author: blog_author,
+    link: blog_link
+}
+```
+
+response codes:
+
+    400 Bad Request
+
+    201 Created
 
