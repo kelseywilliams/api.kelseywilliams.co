@@ -1,7 +1,8 @@
 import express from "express";
 import {
     AddProject,
-    GetProjectCtlr,
+    GetProject,
+    GetBlogs,
     PostBlog
 } from "../controllers/resource.js"
 import VerifyValidSession from "../middleware/verifyValidSession.js";
@@ -20,8 +21,12 @@ router.post("/projects",
 );
 
 router.get("/projects",
-    GetProjectCtlr
+    GetProject
 );
+
+router.get("/blog_list",
+    GetBlogs
+)
 
 router.post("/blog",
     VerifyValidSession,

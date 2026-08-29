@@ -5,7 +5,7 @@ export async function AddProject(req, res) {
     const pool = getPool();
 
     try {
-        const {name, link} = req.body;
+        const { name, link } = req.body;
 
         const query = `insert into projects (name, link) values ($1, $2) returning name, link;`;
         const { rows } = await pool.query(query, [name, link]);
@@ -17,7 +17,7 @@ export async function AddProject(req, res) {
     }
 }
 
-export async function GetProjectCtlr(req, res) {
+export async function GetProject(req, res) {
     const pool = getPool();
     try {
         let query = `select * from projects;`;
@@ -31,6 +31,20 @@ export async function GetProjectCtlr(req, res) {
     }
 }
 
+export async function GetBlogs(req, res) {
+    const pool = getPool();
+
+    try {
+        let query = `select title, date, link from blogs;`;
+        const { rows } = await pool.query(query);
+
+        const projects = Object.fromEntries(rows.map(elem => [elem.title, elem.date, elem.link]));
+        return res.status(200).json(projects);
+    } catch (err) {
+        logger.error(`Error retrieving blogs: ${err.message}`);
+        return res.status(500).json({ message: `Internal Server Error` });
+    }
+}
 export async function PostBlog(req, res) {
     const pool = getPool();
 
