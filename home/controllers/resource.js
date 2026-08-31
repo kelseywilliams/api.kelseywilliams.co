@@ -23,8 +23,7 @@ export async function GetProject(req, res) {
         let query = `select * from projects;`;
         const { rows } = await pool.query(query);
 
-        const projects = Object.fromEntries(rows.map(r => [r.name, r.link]));
-        return res.status(200).json(projects);
+        return res.status(200).json(rows);
     } catch (err) {
         logger.error(`Error retrieving project links: ${err.message}`);
         return res.status(500).json({ message: `Internal Server Error` });
@@ -35,11 +34,10 @@ export async function GetBlogs(req, res) {
     const pool = getPool();
 
     try {
-        let query = `select title, date, link from blogs;`;
+        let query = `select title, date, link from blog;`;
         const { rows } = await pool.query(query);
 
-        const projects = Object.fromEntries(rows.map(elem => [elem.title, elem.date, elem.link]));
-        return res.status(200).json(projects);
+        return res.status(200).json(rows);
     } catch (err) {
         logger.error(`Error retrieving blogs: ${err.message}`);
         return res.status(500).json({ message: `Internal Server Error` });
