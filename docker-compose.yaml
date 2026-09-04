@@ -9,8 +9,8 @@ services:
             USER: "588a4c44508b53764ddbfa2db86996e470b0a4e0f5212840f586f7643f0d791e"
             ADMIN: "28ee1b68e6b7ff1683ab98170c49f3ca5a686aeb65c0741e5c95d3b3b1932fdd"
             TOKEN_EXPIRY_MINS: "20"
-            API_DOMAIN: "proxy:80/api/"
-            DOMAIN: "localhost"
+            API_DOMAIN: "api.kelseywilliams.co"
+            DOMAIN: "kelseywilliams.co"
         secrets:
             - mailjet_api_key
             - mailjet_secret

@@ -82,6 +82,7 @@ export async function Login(req, res) {
         );
         
         if(exists.rows.length == 0){
+            logger.error(`Could not find an entry under ${identifier}.`);
             return res.status(401).json({  
                 message: "Invalid username or password."
             });
@@ -90,6 +91,7 @@ export async function Login(req, res) {
             const isPasswordValid = await bcrypt.compare(`${password}`, user.password);
    
             if (!isPasswordValid){
+                logger.error(`Invalid password.`)
                 return res.status(401).json({   
                     message: "Invalid username or password."
                 })
