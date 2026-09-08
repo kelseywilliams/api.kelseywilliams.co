@@ -17,6 +17,8 @@ services:
             - postgres_worker_secret
             - postgres_readonly_secret
             - redis_secret
+            - user_secret
+            - admin_secret
         networks:
             - site
         volumes:
@@ -46,6 +48,10 @@ secrets:
         file: ./secrets/postgres_readonly_secret.txt
     redis_secret:
         file: ./secrets/redis_secret.txt
+    user_secret:
+        file: ./secrets/user_role.txt
+    admin_secret:
+        file: ./secrets/admin_role.txt
 
 networks:
     site:
