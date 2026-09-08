@@ -3,26 +3,29 @@
 ### Dependencies
 `docker`, `mailjet`, `postgres`, `redis`
 #### mailjet
-This api is setup to use mailjet to send email via mailjet's api.  A mailjet account and server with setup domain is required.  Once the account and domain are setup you will recieve and api key.  This will be placed in a docker secret later.
+This api is setup to use mailjet to send email via mailjet's api.
 #### Postgres
 A Postgres database must be running. 
 
+[Visit my postgres database repo for the site to see what tables and fields the api will expect.](https://github.com/kelseywilliams/postgres)
 #### Redis
 
 A Redis database must be running.
-If using ACLs, create a user with `del`, `setex`, `exists` and `get` permissions
+If using ACLs, create a user with at least `del`, `setex`, `exists` and `get` permissions
 
 ### Secrets
 create a secrets folder with the following structure
 ```
- /secrets
-    ├── jwt_public.txt
+    secrets
+    ├── admin_role.txt
     ├── jwt_private.txt
+    ├── jwt_public.txt
     ├── mailjet_api_key.txt
     ├── mailjet_secret.txt
     ├── postgres_readonly_secret.txt
     ├── postgres_worker_secret.txt
-    └── redis_secret.txt
+    ├── redis_secret.txt
+    └── user_role.txt
 ```
 It is recommended to generate passwords for all databases with `openssl rand -hex 32`.
 
@@ -34,9 +37,11 @@ Add the api key to `mailjet_api_key.txt` and the private key to `mailjet_secret.
 ### JWT Tokens
 This applicaton uses JSON web tokens with a public private RSA key pair in order to verify server authenticity.  After creating the secrets files, to generate the private key, run `openssl genrsa -out ./secrets/jwt_private.txt` and to extract the public key from the private key run `openssl rsa -in ./secrets/jwt_private -pubout -outform PEM -out jwt_public.txt`
 
+### Roles
+Use the keys stored in the role secrets in order to elevate users to allow them to perform admininstrator tasks.
 
 ## Run
-Run with `docker-compose up`
+Run with `docker compose up`
 
 ## API Documentation
 Make a call to the api by calling `http://api-domain` + `/route/` + `endpoint` with the appropriate headers and request body.  Below are outlined the currently implemented routes and their different endpoints and their respective requests, response, and response codes.  If documentation for a request or response is not listed, then it does not exist. 
