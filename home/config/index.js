@@ -10,8 +10,8 @@ const PRIVATE_KEY = fs.readFileSync('/run/secrets/jwt_private', 'utf-8').trim();
 const PUBLIC_KEY = fs.readFileSync('/run/secrets/jwt_public', 'utf-8').trim();
 const MAILJET_API_KEY = fs.readFileSync('/run/secrets/mailjet_api_key', 'utf-8').trim();
 const MAILJET_SECRET = fs.readFileSync('/run/secrets/mailjet_secret', 'utf-8').trim();
-const USER = fs.readFileSync('/run/secrets/user_role', 'utf-8').trim();
-const ADMIN = fs.readFileSync('/run/secrets/admin_role', 'utf-8').trim();
+const USER = fs.readFileSync('/run/secrets/user_secret', 'utf-8').trim();
+const ADMIN = fs.readFileSync('/run/secrets/admin_secret', 'utf-8').trim();
 const REDIS_URI = `redis://api:${redis_pwd}@redis:6379`;
 const POSTGRES_WORKER_URI = `postgresql://worker:${postgres_worker_pwd}@postgres:5432/apidb`;
 const { 
